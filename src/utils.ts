@@ -15,6 +15,45 @@ const getDirectionIndexMap = (width: number) => new Map<Direction, (i: number) =
   [Direction.DownLeft, (i) => i + width - 1]
 ])
 
+export function getRandomlyFilledField(width: number, height: number, randomAliveCellCount: number): number[] {
+  const emptyArray = new Array(width * height).fill(0)
+
+  for(let i = 0; i < randomAliveCellCount; i++) {
+    emptyArray[getRandomFieldIndex(width, height)] = 1;
+  }
+
+  return emptyArray
+}
+
+export function calculateNextField(field: number[], width: number, height: number) {
+  const nextField = [...field];
+
+  const valueIndexOfCells = field.map((value, index) => [value, index])
+  const aliveCellValueIndexes = valueIndexOfCells.filter(([value]) => Boolean(value))
+
+  let deadCellIndexesToCheck = new Set<number>()
+
+  aliveCellValueIndexes.forEach(([, index]) => {
+    const neighbourCellIndexes = selectNeighbourCellIndexes(index, width, height)
+
+    neighbourCellIndexes.forEach(index => deadCellIndexesToCheck.add(index))
+
+    const count = findCountOfAliveCells(neighbourCellIndexes, field)
+
+    nextField[index] = count === 2 || count === 3 ? 1 : 0;
+  })
+
+  deadCellIndexesToCheck.forEach((cellIndex) => {
+    const aliveCellsCount = findCountOfAliveCells(selectNeighbourCellIndexes(cellIndex, width, height), field)
+
+    if (aliveCellsCount === 3) {
+      nextField[cellIndex] = 1;
+    }
+  })
+
+  return nextField
+}
+
 export const selectNeighbourCellIndexes = (index: number, width: number, height: number): number[] => {
   const mapDirectionToIndex = getDirectionIndexMap(width)
 
