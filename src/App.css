@@ -1,19 +1,25 @@
+:root {
+  --width: 0;
+  --height: 0;
+}
+
 .app-container {
   position: relative;
   display: flex;
   flex-wrap: wrap;
 }
 
-.app-container div {
+.app-container .cell {
   position: relative;
-  width: calc(100% / 50);
-  height: calc(100vh / 50);
+  width: calc(100% / var(--width));
+  height: calc(100vh / var(--height));
   flex-grow: 0;
   box-sizing: border-box;
   border: 1px solid #000;
+  font-size: 10px;
 }
 
-.app-container .live {
+.app-container .alive {
   background-color: black;
 }
 
